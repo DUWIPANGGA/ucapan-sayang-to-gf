@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 class Valentine extends Model
 {
-    protected $fillable = ['name', 'slug', 'image', 'birth_date', 'message', 'ucapan', 'photos'];
+    protected $fillable = ['name', 'slug', 'image', 'birth_date', 'message', 'ucapan', 'photos', 'audio'];
 
     protected $casts = [
         'birth_date' => 'date',

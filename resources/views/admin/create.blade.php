@@ -32,6 +32,12 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label">Audio (Custom)</label>
+            <input type="file" name="audio" class="form-input" accept="audio/*">
+            <div class="form-hint">Format: MP3, WAV, OGG. Max 10MB. Kosongkan untuk pakai audio default.</div>
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Tanggal Lahir</label>
             <input type="date" name="birth_date" class="form-input" value="{{ old('birth_date') }}">
         </div>

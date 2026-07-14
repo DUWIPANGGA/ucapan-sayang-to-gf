@@ -235,7 +235,7 @@
     </div>
 
     <button id="audiobtn" onclick="toggleAudio()">&#128266;</button>
-    <audio id="bgm" loop preload="auto"><source src="/audio.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm" loop preload="auto"><source src="{{ $valentine->audio ? asset('storage/'.$valentine->audio) : '/audio.mp3' }}" type="audio/mpeg"></audio>
 
     <div id="flow">
         <div class="bg-r"></div>

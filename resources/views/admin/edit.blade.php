@@ -45,6 +45,19 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label">Audio (Custom)</label>
+            @if($valentine->audio)
+                <div style="margin-bottom:0.75rem;">
+                    <audio controls style="width:100%;height:35px;">
+                        <source src="{{ asset('storage/'.$valentine->audio) }}" type="audio/mpeg">
+                    </audio>
+                </div>
+            @endif
+            <input type="file" name="audio" class="form-input" accept="audio/*">
+            <div class="form-hint">Format: MP3, WAV, OGG. Max 10MB. Kosongkan jika tidak ingin mengganti audio.</div>
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Tanggal Lahir</label>
             <input type="date" name="birth_date" class="form-input" value="{{ old('birth_date', $valentine->birth_date?->format('Y-m-d')) }}">
         </div>

@@ -29,6 +29,7 @@ class AdminValentineController extends Controller
             'ucapan' => 'nullable|string',
             'photos' => 'nullable|array',
             'photos.*' => 'image|max:2048',
+            'audio' => 'nullable|file|mimes:mp3,wav,ogg|max:10240',
         ]);
 
         $validated['slug'] = Str::slug($request->name);
@@ -43,6 +44,10 @@ class AdminValentineController extends Controller
                 $photos[] = $photo->store('valentines/photos', 'public');
             }
             $validated['photos'] = $photos;
+        }
+
+        if ($request->hasFile('audio')) {
+            $validated['audio'] = $request->file('audio')->store('valentines/audio', 'public');
         }
 
         Valentine::create($validated);
@@ -65,6 +70,7 @@ class AdminValentineController extends Controller
             'ucapan' => 'nullable|string',
             'photos' => 'nullable|array',
             'photos.*' => 'image|max:2048',
+            'audio' => 'nullable|file|mimes:mp3,wav,ogg|max:10240',
         ]);
 
         $validated['slug'] = Str::slug($request->name);
@@ -79,6 +85,10 @@ class AdminValentineController extends Controller
                 $photos[] = $photo->store('valentines/photos', 'public');
             }
             $validated['photos'] = $photos;
+        }
+
+        if ($request->hasFile('audio')) {
+            $validated['audio'] = $request->file('audio')->store('valentines/audio', 'public');
         }
 
         $valentine->update($validated);
