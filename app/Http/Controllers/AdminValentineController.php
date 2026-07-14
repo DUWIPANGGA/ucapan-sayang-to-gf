@@ -5,9 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Valentine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class AdminValentineController extends Controller
 {
+    public function __construct()
+    {
+        $dirs = [
+            storage_path('app/public/valentines'),
+            storage_path('app/public/valentines/photos'),
+            storage_path('app/public/valentines/audio'),
+        ];
+        foreach ($dirs as $dir) {
+            if (!File::isDirectory($dir)) {
+                File::makeDirectory($dir, 0755, true, true);
+            }
+        }
+    }
+
     public function index()
     {
         $valentines = Valentine::latest()->get();
@@ -29,10 +44,11 @@ class AdminValentineController extends Controller
             'ucapan' => 'nullable|string',
             'photos' => 'nullable|array',
             'photos.*' => 'image|max:2048',
-            'audio' => 'nullable|file|max:10240',
+            'audio' => 'nullable|max:10240',
         ]);
 
         $validated['slug'] = Str::slug($request->name);
+        unset($validated['audio']);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('valentines', 'public');
@@ -47,7 +63,10 @@ class AdminValentineController extends Controller
         }
 
         if ($request->hasFile('audio')) {
-            $validated['audio'] = $request->file('audio')->store('valentines/audio', 'public');
+            $file = $request->file('audio');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(storage_path('app/public/valentines/audio'), $filename);
+            $validated['audio'] = 'valentines/audio/' . $filename;
         }
 
         Valentine::create($validated);
@@ -70,10 +89,11 @@ class AdminValentineController extends Controller
             'ucapan' => 'nullable|string',
             'photos' => 'nullable|array',
             'photos.*' => 'image|max:2048',
-            'audio' => 'nullable|file|max:10240',
+            'audio' => 'nullable|max:10240',
         ]);
 
         $validated['slug'] = Str::slug($request->name);
+        unset($validated['audio']);
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('valentines', 'public');
@@ -88,7 +108,10 @@ class AdminValentineController extends Controller
         }
 
         if ($request->hasFile('audio')) {
-            $validated['audio'] = $request->file('audio')->store('valentines/audio', 'public');
+            $file = $request->file('audio');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(storage_path('app/public/valentines/audio'), $filename);
+            $validated['audio'] = 'valentines/audio/' . $filename;
         }
 
         $valentine->update($validated);
