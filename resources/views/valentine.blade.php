@@ -7,6 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    @if($valentine->image)
+        <link rel="icon" type="image/jpeg" href="{{ asset('storage/'.$valentine->image) }}">
+    @endif
     <style>
         :root{--r:30px;--bg:#060010;--red:#ef4444;--pink:#ec4899;--pf:'Playfair Display',serif;--sans:'Inter',sans-serif;}
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -203,9 +206,34 @@
             90%{opacity:0.3;}
             100%{opacity:0;transform:translateY(-100vh) rotate(360deg);}
         }
+
+        /* Audio Modal */
+        #audioModal{position:fixed;inset:0;z-index:9999;background:rgba(6,0,16,0.95);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);}
+        #audioModal.hidden{display:none;}
+        .audio-modal-content{text-align:center;padding:2rem;max-width:350px;}
+        .audio-modal-icon{font-size:4rem;margin-bottom:1.5rem;animation:bounce 1s ease-in-out infinite;}
+        @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
+        .audio-modal-title{font-family:var(--pf);font-size:clamp(1.5rem,5vw,2.5rem);color:#fff;margin-bottom:0.75rem;}
+        .audio-modal-desc{color:var(--muted);font-size:0.95rem;margin-bottom:2rem;line-height:1.6;}
+        .audio-modal-btn{padding:1rem 2.5rem;border-radius:9999px;border:none;background:linear-gradient(135deg,var(--red),var(--pink));color:#fff;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:var(--sans);box-shadow:0 0 30px rgba(239,68,68,0.4);}
+        .audio-modal-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(239,68,68,0.6);}
+        .audio-modal-btn:active{transform:scale(0.95);}
+        .audio-modal-hearts{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+        .audio-modal-hearts .floater{opacity:0.15;}
     </style>
 </head>
 <body>
+    <!-- Audio Modal -->
+    <div id="audioModal">
+        <div class="audio-modal-hearts" id="modalFloaters"></div>
+        <div class="audio-modal-content">
+            <div class="audio-modal-icon">&#128266;</div>
+            <h2 class="audio-modal-title">Hai, ada pesen buat kamu!</h2>
+            <p class="audio-modal-desc">Nyalain audio-nya ya biar lebih romantis &#127925;</p>
+            <button class="audio-modal-btn" onclick="enableAudio()">Play Audio &#10084;&#65039;</button>
+        </div>
+    </div>
+
     <button id="audiobtn" onclick="toggleAudio()">&#128266;</button>
     <audio id="bgm" loop preload="auto"><source src="/audio.mp3" type="audio/mpeg"></audio>
 
@@ -284,7 +312,7 @@
             <div class="fw">
                 <div class="fht">&#10084;&#65039;</div>
                 <div class="fn">{{ $valentine->name }}</div>
-                <div class="fs">{{ $valentine->birth_date ? $valentine->birth_date->diffInYears(now()) . ' tahun penuh cinta' : '' }}</div>
+                <div class="fs">{{ $valentine->birth_date ? (int) $valentine->birth_date->diffInYears(now()) . ' tahun penuh cinta' : '' }}</div>
                 <div class="fm">
                     @if($valentine->birth_date)
                         Lahir tanggal <b>{{ $valentine->birth_date->format('d F Y') }}</b><br>
@@ -323,12 +351,22 @@
         var audio=document.getElementById('bgm'),audioBtn=document.getElementById('audiobtn'),audioPlaying=false;
         var colors=['#e74c3c','#e91e63','#9b59b6','#8e44ad','#3498db','#2980b9','#1abc9c','#16a085','#2ecc71','#27ae60','#f39c12','#e67e22','#d35400','#c0392b','#e84393'];
 
+        // Audio Modal
+        (function(){
+            var mf=document.getElementById('modalFloaters');if(!mf)return;
+            var items=['<svg viewBox="0 0 24 24" fill="currentColor" width="VAR" height="VAR"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>','<svg viewBox="0 0 24 24" fill="currentColor" width="VAR" height="VAR"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>'];
+            for(var i=0;i<20;i++){var el=document.createElement('div');el.className='floater';var sz=Math.floor(12+Math.random()*16);el.innerHTML=items[i%2].replace(/VAR/g,sz);el.style.left=Math.random()*100+'%';el.style.animationDuration=(12+Math.random()*18)+'s';el.style.animationDelay=(-Math.random()*20)+'s';mf.appendChild(el);}
+        })();
+        window.enableAudio=function(){
+            document.getElementById('audioModal').classList.add('hidden');
+            audio.play().then(function(){audioPlaying=true;audioBtn.innerHTML='&#128264;';}).catch(function(){});
+        };
+
         // Audio
         window.toggleAudio=function(){
             if(audioPlaying){audio.pause();audioBtn.innerHTML='&#128266;';audioPlaying=false;}
             else{audio.play();audioBtn.innerHTML='&#128264;';audioPlaying=true;}
         };
-        audio.play().then(function(){audioPlaying=true;audioBtn.innerHTML='&#128264;';}).catch(function(){});
 
         // Floating items - hearts + sparkles + stars
         (function(){
